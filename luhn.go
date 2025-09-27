@@ -1,6 +1,8 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // Pseudocode for Luhn Algorithm
 // Source: https://en.wikipedia.org/wiki/Luhn_algorithm
@@ -21,41 +23,20 @@ import "strconv"
 // end function
 
 func isValid(num string) (bool, error) {
-	sum := 0
-	parity := len(num) % 2
-	for i := range len(num) - 1 {
-		digit, err := strconv.Atoi(string(num[i]))
-		if err != nil {
-			return false, err
-		}
-		if i%2 == parity {
-			sum += digit
-		} else if digit > 4 {
-			sum += 2*digit - 9
-		} else {
-			sum += 2 * digit
-		}
+	if len(num) < 1 {
+		return false, nil
 	}
-	lastDigit, err := strconv.Atoi(string(num[len(num)-1]))
+	checkDigit, err := getCheckDigit(num[0 : len(num)-1])
 	if err != nil {
 		return false, err
 	}
-	return lastDigit == (10-(sum%10))%10, nil
-}
-
-func countDigits(num int) int {
-	if num == 0 {
-		return 1
-	}
-	count := 0
-	for num > 0 {
-		num /= 10
-		count += 1
-	}
-	return count
+	return string(num[len(num)-1]) == checkDigit, nil
 }
 
 func getCheckDigit(num string) (string, error) {
+	if len(num) < 1 {
+		return "", nil
+	}
 	sum := 0
 	parity := len(num) % 2
 	for i := range len(num) {
